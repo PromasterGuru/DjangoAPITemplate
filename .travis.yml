@@ -1,0 +1,34 @@
+language: python
+python:
+- "3.6"
+# setup environment
+env:
+- DJANGO_VERSION=2.1.3
+
+services:
+- postgresql
+
+addons:
+ postgresql: '9.6'
+
+# install dependencies
+install:
+  - pip install -r requirements.txt
+  - pip install coveralls
+  - pip install coverage
+
+before_script:
+  - psql -c "CREATE DATABASE ahinfinitystonesdb;" -U postgres
+  - python manage.py makemigrations
+  - python manage.py migrate
+
+script:
+  - coverage run --source='.' ./manage.py test
+  - coverage report
+
+after_success:
+  - coveralls
+
+notifications:
+  email: false
+
